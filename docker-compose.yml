@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    stdin_open: true
+    tty: true
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - '5000:5000'
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/tool_sharing_db
+      - JWT_SECRET=your_jwt_secret
+      - SMTP_HOST=smtp.mailtrap.io
+      - SMTP_PORT=2525
+      - SMTP_USER=your_smtp_user
+      - SMTP_PASS=your_smtp_password
+    depends_on:
+      - db
+
+  db:
+    image: postgres:12
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=tool_sharing_db
+    ports:
+      - '5432:5432'
